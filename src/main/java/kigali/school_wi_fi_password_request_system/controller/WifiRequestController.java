@@ -1,5 +1,6 @@
 package kigali.school_wi_fi_password_request_system.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import kigali.school_wi_fi_password_request_system.domain.RequestStatus;
 import kigali.school_wi_fi_password_request_system.domain.WifiRequest;
 import kigali.school_wi_fi_password_request_system.service.WifiRequestService;
 
@@ -30,6 +32,21 @@ public class WifiRequestController {
     @GetMapping("/all")
     public ResponseEntity<List<WifiRequest>> getAll() {
         return new ResponseEntity<>(reqServe.getAllWifiRequests(), HttpStatus.OK);
+    }
+
+    // B2
+    @GetMapping("/by-status")
+    public ResponseEntity<List<WifiRequest>> getByStatus(@RequestParam RequestStatus status) {
+        return new ResponseEntity<>(reqServe.getByStatus(status), HttpStatus.OK);
+    }
+
+    // B3 (the Strings are parsed to LocalDate here, as the paper asks)
+    @GetMapping("/between")
+    public ResponseEntity<List<WifiRequest>> getBetween(@RequestParam String start,
+                                                        @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return new ResponseEntity<>(reqServe.getBetween(startDate, endDate), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

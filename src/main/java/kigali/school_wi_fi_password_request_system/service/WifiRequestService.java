@@ -1,5 +1,6 @@
 package kigali.school_wi_fi_password_request_system.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,5 +70,15 @@ public class WifiRequestService {
         }
         reqRepo.delete(request);
         return "Wifi request deleted successfully";
+    }
+
+    // B2
+    public List<WifiRequest> getByStatus(RequestStatus status) {
+        return reqRepo.findByStatusOrderByRequestDateAsc(status);
+    }
+
+    // B3
+    public List<WifiRequest> getBetween(LocalDate start, LocalDate end) {
+        return reqRepo.findByRequestDateBetweenOrderByRequestDateAsc(start, end);
     }
 }
