@@ -28,6 +28,12 @@ public class StudentController {
         return new ResponseEntity<>(studentServe.getAllStudents(), HttpStatus.OK);
     }
 
+    // B1
+    @GetMapping("/by-last-name")
+    public ResponseEntity<List<Student>> getByLastName(@RequestParam String lastName) {
+        return new ResponseEntity<>(studentServe.getByLastName(lastName), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         Student student = studentServe.getStudentById(id);

@@ -49,4 +49,9 @@ public class StudentService {
         studentRepo.delete(student);
         return "Student deleted successfully";
     }
+
+    // B1
+    public List<Student> getByLastName(String lastName) {
+        return studentRepo.findByLastNameIgnoreCaseOrderByFirstNameAsc(lastName);
+    }
 }
