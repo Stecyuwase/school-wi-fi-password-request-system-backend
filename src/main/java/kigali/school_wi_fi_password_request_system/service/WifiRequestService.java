@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kigali.school_wi_fi_password_request_system.domain.ItStaff;
 import kigali.school_wi_fi_password_request_system.domain.RequestStatus;
 import kigali.school_wi_fi_password_request_system.domain.Student;
 import kigali.school_wi_fi_password_request_system.domain.WifiRequest;
+import kigali.school_wi_fi_password_request_system.repository.AccessGrantRepository;
 import kigali.school_wi_fi_password_request_system.repository.ItStaffRepository;
 import kigali.school_wi_fi_password_request_system.repository.StudentRepository;
 import kigali.school_wi_fi_password_request_system.repository.WifiRequestRepository;
@@ -26,6 +28,9 @@ public class WifiRequestService {
 
     @Autowired
     private ItStaffRepository staffRepo;
+
+    @Autowired
+    private AccessGrantRepository grantRepo;
 
     // D1: past date -> 400, staff already busy -> 409, status always PENDING
     public String saveWifiRequest(WifiRequest request, UUID studentId, UUID itStaffId) {
@@ -70,10 +75,14 @@ public class WifiRequestService {
         return "Wifi request updated successfully";
     }
 
+    // E3: blocked when the request has access grants
     public String deleteWifiRequest(UUID id) {
         WifiRequest request = reqRepo.findById(id).orElse(null);
         if (request == null) {
             return "The wifi request with that id does not exist";
+        }
+        if (grantRepo.existsByWifiRequest(request)) {
+            return "That wifi request has access grants, delete them first";
         }
         reqRepo.delete(request);
         return "Wifi request deleted successfully";
@@ -107,5 +116,20 @@ public class WifiRequestService {
         request.setStatus(newStatus);
         reqRepo.save(request);
         return "Wifi request status updated successfully";
+    }
+
+    // F1
+    public List<Object[]> getStatsByStatus() {
+        return reqRepo.countGroupedByStatus();
+    }
+
+    // F2: one UPDATE query, no Java loop
+    @Transactional
+    public String cancelDay(UUID itStaffId, LocalDate date) {
+        if (!staffRepo.existsById(itStaffId)) {
+            return "The it staff with that id does not exist";
+        }
+        int count = reqRepo.cancelDay(itStaffId, date, RequestStatus.REJECTED, RequestStatus.APPROVED);
+        return count + " wifi requests cancelled";
     }
 }

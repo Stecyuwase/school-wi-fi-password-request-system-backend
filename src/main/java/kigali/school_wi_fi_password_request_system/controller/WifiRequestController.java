@@ -54,6 +54,12 @@ public class WifiRequestController {
         return new ResponseEntity<>(reqServe.getBetween(startDate, endDate), HttpStatus.OK);
     }
 
+    // F1
+    @GetMapping("/stats/by-status")
+    public ResponseEntity<List<Object[]>> statsByStatus() {
+        return new ResponseEntity<>(reqServe.getStatsByStatus(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         WifiRequest request = reqServe.getWifiRequestById(id);
@@ -70,10 +76,14 @@ public class WifiRequestController {
         return new ResponseEntity<>(msg, status);
     }
 
+    // E3
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         String msg = reqServe.deleteWifiRequest(id);
-        HttpStatus status = msg.contains("does not exist") ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+        HttpStatus status;
+        if (msg.contains("does not exist")) status = HttpStatus.NOT_FOUND;
+        else if (msg.contains("has access grants")) status = HttpStatus.CONFLICT;
+        else status = HttpStatus.OK;
         return new ResponseEntity<>(msg, status);
     }
 
@@ -86,5 +96,13 @@ public class WifiRequestController {
         else if (msg.equals("Wifi request status updated successfully")) httpStatus = HttpStatus.OK;
         else httpStatus = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(msg, httpStatus);
+    }
+
+    // F2
+    @PatchMapping("/cancel-day")
+    public ResponseEntity<?> cancelDay(@RequestParam UUID itStaffId, @RequestParam String date) {
+        String msg = reqServe.cancelDay(itStaffId, LocalDate.parse(date));
+        HttpStatus status = msg.contains("does not exist") ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+        return new ResponseEntity<>(msg, status);
     }
 }
