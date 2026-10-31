@@ -13,8 +13,10 @@ import kigali.school_wi_fi_password_request_system.domain.Student;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, UUID> {
 
+    // B1 (DERIVED)
     List<Student> findByLastNameIgnoreCaseOrderByFirstNameAsc(String lastName);
 
+    // C4 (JPQL)
     @Query("SELECT DISTINCT w.student FROM WifiRequest w WHERE w.itStaff.id = :itStaffId")
     List<Student> findStudentsOfItStaff(@Param("itStaffId") UUID itStaffId);
 }

@@ -59,4 +59,26 @@ public class ItStaffController {
         HttpStatus status = msg.contains("does not exist") ? HttpStatus.NOT_FOUND : HttpStatus.OK;
         return new ResponseEntity<>(msg, status);
     }
+
+    // D3
+    @PutMapping("/{itStaffId}/duties/{dutyId}")
+    public ResponseEntity<?> addDuty(@PathVariable UUID itStaffId, @PathVariable UUID dutyId) {
+        String msg = staffServe.addDuty(itStaffId, dutyId);
+        HttpStatus status;
+        if (msg.contains("does not exist")) status = HttpStatus.NOT_FOUND;
+        else if (msg.equals("Duty added to the it staff")) status = HttpStatus.OK;
+        else status = HttpStatus.CONFLICT;
+        return new ResponseEntity<>(msg, status);
+    }
+
+    // D4
+    @PatchMapping("/{itStaffId}/computer-lab")
+    public ResponseEntity<?> changeLab(@PathVariable UUID itStaffId, @RequestParam int labNumber) {
+        String msg = staffServe.changeLab(itStaffId, labNumber);
+        HttpStatus status;
+        if (msg.contains("does not exist")) status = HttpStatus.NOT_FOUND;
+        else if (msg.equals("Computer lab changed successfully")) status = HttpStatus.OK;
+        else status = HttpStatus.CONFLICT;
+        return new ResponseEntity<>(msg, status);
+    }
 }

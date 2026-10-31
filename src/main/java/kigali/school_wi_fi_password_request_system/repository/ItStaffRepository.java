@@ -13,7 +13,10 @@ import kigali.school_wi_fi_password_request_system.domain.ItStaff;
 @Repository
 public interface ItStaffRepository extends JpaRepository<ItStaff, UUID> {
 
-    // C1 (JPQL): it staff holding a duty, name matched ignoring case (JOIN on the collection)
+    // C1 (JPQL)
     @Query("SELECT DISTINCT s FROM ItStaff s JOIN s.duties d WHERE LOWER(d.name) = LOWER(:name)")
     List<ItStaff> findByDutyName(@Param("name") String name);
+
+    // D4 (DERIVED): is this lab used by another it staff?
+    boolean existsByComputerLabLabNumberAndIdNot(int labNumber, UUID id);
 }
