@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kigali.school_wi_fi_password_request_system.domain.Student;
+import kigali.school_wi_fi_password_request_system.repository.ItStaffRepository;
 import kigali.school_wi_fi_password_request_system.repository.StudentRepository;
 
 @Service
@@ -14,6 +15,9 @@ public class StudentService {
 
     @Autowired
     private StudentRepository studentRepo;
+
+    @Autowired
+    private ItStaffRepository staffRepo;
 
     public String saveStudent(Student student) {
         studentRepo.save(student);
@@ -53,5 +57,13 @@ public class StudentService {
     // B1
     public List<Student> getByLastName(String lastName) {
         return studentRepo.findByLastNameIgnoreCaseOrderByFirstNameAsc(lastName);
+    }
+
+    // C4 (null if the it staff does not exist)
+    public List<Student> getStudentsOfItStaff(UUID itStaffId) {
+        if (!staffRepo.existsById(itStaffId)) {
+            return null;
+        }
+        return studentRepo.findStudentsOfItStaff(itStaffId);
     }
 }

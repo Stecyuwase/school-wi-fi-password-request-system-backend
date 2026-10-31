@@ -28,6 +28,12 @@ public class DutyController {
         return new ResponseEntity<>(dutyServe.getAllDuties(), HttpStatus.OK);
     }
 
+    // C3
+    @GetMapping("/unused")
+    public ResponseEntity<List<Duty>> getUnused() {
+        return new ResponseEntity<>(dutyServe.getUnusedDuties(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         Duty duty = dutyServe.getDutyById(id);

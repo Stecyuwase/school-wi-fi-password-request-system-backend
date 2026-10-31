@@ -47,4 +47,9 @@ public class ComputerLabService {
         labRepo.delete(lab);
         return "Computer lab deleted successfully";
     }
+
+    // C2
+    public List<ComputerLab> getFreeLabs() {
+        return labRepo.findFreeLabs();
+    }
 }

@@ -46,4 +46,9 @@ public class DutyService {
         dutyRepo.delete(duty);
         return "Duty deleted successfully";
     }
+
+    // C3
+    public List<Duty> getUnusedDuties() {
+        return dutyRepo.findUnusedDuties();
+    }
 }

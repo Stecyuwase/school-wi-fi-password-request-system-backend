@@ -31,6 +31,12 @@ public class ItStaffController {
         return new ResponseEntity<>(staffServe.getAllItStaff(), HttpStatus.OK);
     }
 
+    // C1
+    @GetMapping("/by-duty")
+    public ResponseEntity<List<ItStaff>> getByDuty(@RequestParam String name) {
+        return new ResponseEntity<>(staffServe.getByDuty(name), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         ItStaff staff = staffServe.getItStaffById(id);

@@ -28,6 +28,12 @@ public class ComputerLabController {
         return new ResponseEntity<>(labServe.getAllLabs(), HttpStatus.OK);
     }
 
+    // C2
+    @GetMapping("/free")
+    public ResponseEntity<List<ComputerLab>> getFree() {
+        return new ResponseEntity<>(labServe.getFreeLabs(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) {
         ComputerLab lab = labServe.getLabById(id);

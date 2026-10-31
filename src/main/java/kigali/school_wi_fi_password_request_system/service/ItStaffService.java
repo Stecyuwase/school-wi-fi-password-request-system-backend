@@ -60,4 +60,9 @@ public class ItStaffService {
         staffRepo.delete(staff);
         return "It staff deleted successfully";
     }
+
+    // C1
+    public List<ItStaff> getByDuty(String name) {
+        return staffRepo.findByDutyName(name);
+    }
 }
