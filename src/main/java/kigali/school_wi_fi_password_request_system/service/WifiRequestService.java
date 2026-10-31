@@ -27,7 +27,11 @@ public class WifiRequestService {
     @Autowired
     private ItStaffRepository staffRepo;
 
+    // D1: past date -> 400, staff already busy -> 409, status always PENDING
     public String saveWifiRequest(WifiRequest request, UUID studentId, UUID itStaffId) {
+        if (request.getRequestDate() != null && request.getRequestDate().isBefore(LocalDate.now())) {
+            return "Wifi request date cannot be in the past";
+        }
         Student student = studentRepo.findById(studentId).orElse(null);
         if (student == null) {
             return "The student with that id does not exist";
@@ -35,6 +39,9 @@ public class WifiRequestService {
         ItStaff staff = staffRepo.findById(itStaffId).orElse(null);
         if (staff == null) {
             return "The it staff with that id does not exist";
+        }
+        if (reqRepo.existsByItStaffIdAndRequestDateAndStatusNot(itStaffId, request.getRequestDate(), RequestStatus.REJECTED)) {
+            return "IT staff member already handles a request on that date";
         }
         request.setStudent(student);
         request.setItStaff(staff);
@@ -51,7 +58,7 @@ public class WifiRequestService {
         return reqRepo.findById(id).orElse(null);
     }
 
-    // The status is NOT changed here (rule D2: only the status endpoint changes it)
+    // The status is NOT changed here (D2: only the status endpoint changes it)
     public String updateWifiRequest(UUID id, WifiRequest updated) {
         WifiRequest request = reqRepo.findById(id).orElse(null);
         if (request == null) {
@@ -80,5 +87,25 @@ public class WifiRequestService {
     // B3
     public List<WifiRequest> getBetween(LocalDate start, LocalDate end) {
         return reqRepo.findByRequestDateBetweenOrderByRequestDateAsc(start, end);
+    }
+
+    // D2: status flow
+    public String changeStatus(UUID id, RequestStatus newStatus) {
+        WifiRequest request = reqRepo.findById(id).orElse(null);
+        if (request == null) {
+            return "The wifi request with that id does not exist";
+        }
+        RequestStatus current = request.getStatus();
+        boolean allowed =
+                (current == RequestStatus.PENDING
+                        && (newStatus == RequestStatus.REVIEWING || newStatus == RequestStatus.REJECTED))
+             || (current == RequestStatus.REVIEWING
+                        && (newStatus == RequestStatus.APPROVED || newStatus == RequestStatus.REJECTED));
+        if (!allowed) {
+            return "Cannot change status from " + current + " to " + newStatus;
+        }
+        request.setStatus(newStatus);
+        reqRepo.save(request);
+        return "Wifi request status updated successfully";
     }
 }

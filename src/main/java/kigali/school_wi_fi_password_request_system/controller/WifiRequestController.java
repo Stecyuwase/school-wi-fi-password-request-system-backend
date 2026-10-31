@@ -20,12 +20,17 @@ public class WifiRequestController {
     @Autowired
     private WifiRequestService reqServe;
 
+    // D1
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody WifiRequest request,
                                   @RequestParam UUID studentId,
                                   @RequestParam UUID itStaffId) {
         String msg = reqServe.saveWifiRequest(request, studentId, itStaffId);
-        HttpStatus status = msg.contains("does not exist") ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
+        HttpStatus status;
+        if (msg.contains("does not exist")) status = HttpStatus.NOT_FOUND;
+        else if (msg.contains("past")) status = HttpStatus.BAD_REQUEST;
+        else if (msg.contains("already handles")) status = HttpStatus.CONFLICT;
+        else status = HttpStatus.CREATED;
         return new ResponseEntity<>(msg, status);
     }
 
@@ -40,7 +45,7 @@ public class WifiRequestController {
         return new ResponseEntity<>(reqServe.getByStatus(status), HttpStatus.OK);
     }
 
-    // B3 (the Strings are parsed to LocalDate here, as the paper asks)
+    // B3
     @GetMapping("/between")
     public ResponseEntity<List<WifiRequest>> getBetween(@RequestParam String start,
                                                         @RequestParam String end) {
@@ -70,5 +75,16 @@ public class WifiRequestController {
         String msg = reqServe.deleteWifiRequest(id);
         HttpStatus status = msg.contains("does not exist") ? HttpStatus.NOT_FOUND : HttpStatus.OK;
         return new ResponseEntity<>(msg, status);
+    }
+
+    // D2
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> changeStatus(@PathVariable UUID id, @RequestParam RequestStatus status) {
+        String msg = reqServe.changeStatus(id, status);
+        HttpStatus httpStatus;
+        if (msg.contains("does not exist")) httpStatus = HttpStatus.NOT_FOUND;
+        else if (msg.equals("Wifi request status updated successfully")) httpStatus = HttpStatus.OK;
+        else httpStatus = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(msg, httpStatus);
     }
 }

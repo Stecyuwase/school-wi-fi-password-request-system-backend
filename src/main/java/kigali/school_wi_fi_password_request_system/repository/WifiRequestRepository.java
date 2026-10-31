@@ -13,9 +13,12 @@ import kigali.school_wi_fi_password_request_system.domain.WifiRequest;
 @Repository
 public interface WifiRequestRepository extends JpaRepository<WifiRequest, UUID> {
 
-    // B2 (DERIVED): by status, earliest requestDate first
+    // B2 (DERIVED)
     List<WifiRequest> findByStatusOrderByRequestDateAsc(RequestStatus status);
 
-    // B3 (DERIVED): both dates inclusive, ordered by requestDate
+    // B3 (DERIVED)
     List<WifiRequest> findByRequestDateBetweenOrderByRequestDateAsc(LocalDate start, LocalDate end);
+
+    // D1 (DERIVED): has this it staff a request on that date whose status is not REJECTED?
+    boolean existsByItStaffIdAndRequestDateAndStatusNot(UUID itStaffId, LocalDate date, RequestStatus status);
 }
